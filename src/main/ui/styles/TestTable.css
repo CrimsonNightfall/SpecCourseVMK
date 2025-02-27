@@ -1,0 +1,29 @@
+table {
+    border-collapse: collapse;
+    border-color: #7fffd4;
+    border: 2px solid;
+    font-family: "Ubuntu", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+table thead {
+    background-color: #0000ff;
+    color: #000000;
+}
+
+table th, table td {
+    border: 1px solid #000000;
+    padding: 8px 10px;
+    color: #000000;
+}
+
+table td:last-of-type {
+    text-align: center;
+}
+
+table tbody > tr:nth-of-type(even) {
+    background-color: #00ffff;
+}
