@@ -2,7 +2,7 @@ package ru.msu.speccoursevmk.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.msu.speccoursevmk.e.Equipment;
+import ru.msu.speccoursevmk.e.Items;
 import ru.msu.speccoursevmk.e.Nomenclature;
 
 import javax.sql.DataSource;
@@ -21,11 +21,11 @@ public class EquipmentAPI {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public int edit(Equipment equipment, Connection connection) {
+    public int edit(Items items, Connection connection) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public List<Equipment> getList(Connection connection) {
+    public List<Items> getList(Connection connection) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

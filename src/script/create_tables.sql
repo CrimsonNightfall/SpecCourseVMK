@@ -1,6 +1,6 @@
 create table rubr_user_roles
 (
-    id integer not null
+    id SERIAL not null
         constraint rubr_user_roles_pk
             primary key,
     name text not null,
@@ -8,10 +8,10 @@ create table rubr_user_roles
     update_time timestamp with time zone default current_timestamp
 );
 
-create table rubr_inventory_holdings_nomenclatures
+create table rubr_item_nomenclatures
 (
-    id integer not null
-        constraint rubr_inventory_holdings_nomenclatures_pk
+    id SERIAL not null
+        constraint rubr_item_nomenclatures_pk
             primary key,
     name text not null,
     create_time timestamp with time zone default current_timestamp,
@@ -20,16 +20,16 @@ create table rubr_inventory_holdings_nomenclatures
 
 create table rubr_list
 (
-    id integer not null
+    id SERIAL not null
         constraint rubr_list_pk
-        prinary key,
-    rubr_table_name string not null,
+            primary key,
+    rubr_table_name text not null,
     rubr_table_description text not null
 );
 
 create table obj_users
 (
-    id integer not null
+    id SERIAL not null
         constraint obj_users_pk
             primary key,
     login text not null,
@@ -42,14 +42,14 @@ create table obj_users
     update_time timestamp with time zone default current_timestamp
 );
 
-create table obj_inventory_holdings
+create table obj_items
 (
-    id integer not null
-        constraint obj_inventory_holdings_pk
+    id SERIAL not null
+        constraint obj_items_pk
             primary key,
     nomenclature_name_id integer not null
-        constraint obj_inventory_holdings_rubr_inventory_holdings_nomenclatures_id_fk
-            references rubr_inventory_holdings_nomenclatures,
+        constraint obj_items_rubr_item_nomenclatures_id_fk
+            references rubr_item_nomenclatures,
     quantity integer not null,
     create_time timestamp with time zone default current_timestamp,
     update_time timestamp with time zone default current_timestamp

@@ -1,15 +1,21 @@
 package ru.msu.speccoursevmk.controller.rest;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import ru.msu.speccoursevmk.api.EquipmentAPI;
-import ru.msu.speccoursevmk.e.Equipment;
+import ru.msu.speccoursevmk.e.Items;
 import ru.msu.speccoursevmk.e.Nomenclature;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/equipment")
@@ -18,23 +24,66 @@ public class EquipmentRestController {
     private final EquipmentAPI equipmentAPI;
     private final DataSource dataSource;
 
+    @Autowired JdbcTemplate template;
+
     @GetMapping("/list")
-    public ResponseEntity<List<Equipment>> getList() {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    public ResponseEntity<List<Items>> getList() {
+//        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        String sSQL = "SELECT * FROM obj_items";
+        List<Map<String, Object>> maps = template.queryForList(sSQL);
+        var items = new ArrayList<Items>();
+        maps.forEach(entity -> {
+            var curEntity = new Items();
+            var curIdColumnRowValue = (int) entity.get("id");
+            curEntity.setId(curIdColumnRowValue);
+            var curNomIdColumnRowValue = (int) entity.get("nomenclature_name_id");
+            curEntity.setNomenclatureId(curNomIdColumnRowValue);
+            var curCount = (int) entity.get("quantity");
+            curEntity.setCount(curCount);
+            items.add(curEntity);
+        });
+        return ResponseEntity.ok(items);
     }
 
     @GetMapping("/nomenclatures")
     public ResponseEntity<List<Nomenclature>> getNomenclatures() {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+//        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        String sSQL = "SELECT * FROM rubr_item_nomenclatures";
+        List<Map<String, Object>> maps = template.queryForList(sSQL);
+        var nomenclatures = new ArrayList<Nomenclature>();
+        maps.forEach(entity -> {
+            var curEntity = new Nomenclature();
+            var curIdColumnRowValue = (int) entity.get("id");
+            curEntity.setId(curIdColumnRowValue);
+            var curCount = entity.get("name");
+            curEntity.setName(String.valueOf(curCount));
+            var curCreateTime = (Timestamp) entity.get("create_time");
+            curEntity.setCreateTime(curCreateTime.toInstant());
+            var curUpdateTime = (Timestamp) entity.get("update_time");
+            curEntity.setUpdateTime(curUpdateTime.toInstant());
+            nomenclatures.add(curEntity);
+        });
+        return ResponseEntity.ok(nomenclatures);
     }
 
-    @PutMapping("/add-nomenclatures")
+    @PutMapping("/add-nomenclature")
     public ResponseEntity<Void> addNomenclature(@RequestBody Nomenclature nomenclature) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+//        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        String sSQL = "INSERT INTO rubr_item_nomenclatures (name) VALUES (?)";
+        template.update(sSQL, nomenclature.getName());
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/edit")
-    public ResponseEntity<Void> edit(@RequestBody Equipment equipment) {
+    @PutMapping("/edit")
+    public ResponseEntity<Void> edit(@RequestBody Items items) {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+
+    }
+
+    @PutMapping("/edit-nomenclature")
+    public ResponseEntity<Void> editNomenclature(@RequestBody Nomenclature nomenclature) {
+        String sSQL = "UPDATE rubr_item_nomenclatures SET name = ? WHERE id = ?";
+        template.update(sSQL, nomenclature.getName(), nomenclature.getId());
+        return ResponseEntity.ok().build();
     }
 }
