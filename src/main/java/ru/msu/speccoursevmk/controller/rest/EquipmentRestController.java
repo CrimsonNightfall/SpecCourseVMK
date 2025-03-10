@@ -82,7 +82,7 @@ public class EquipmentRestController {
 
     @PutMapping("/edit-nomenclature")
     public ResponseEntity<Void> editNomenclature(@RequestBody Nomenclature nomenclature) {
-        String sSQL = "UPDATE rubr_item_nomenclatures SET name = ? WHERE id = ?";
+        String sSQL = "UPDATE rubr_item_nomenclatures SET name = ?, update_time = CURRENT_TIMESTAMP WHERE id = ?";
         template.update(sSQL, nomenclature.getName(), nomenclature.getId());
         return ResponseEntity.ok().build();
     }
