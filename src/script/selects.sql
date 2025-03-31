@@ -28,3 +28,16 @@ select obj_items.*, obj_users.login, obj_users.full_name, coalesce(rubr_item_nom
         left join obj_users
             on obj_items.create_user_id = obj_users.id
     limit 3;
+
+select rubr_item_nomenclatures.id, rubr_item_nomenclatures.name, sum(obj_items.quantity) as total_count
+    from rubr_item_nomenclatures
+        left join obj_items
+            on rubr_item_nomenclatures.id = obj_items.nomenclature_name_id
+    group by rubr_item_nomenclatures.id, rubr_item_nomenclatures.name;
+
+select rubr_item_nomenclatures.id, rubr_item_nomenclatures.name
+    from rubr_item_nomenclatures
+        left join obj_items
+            on rubr_item_nomenclatures.id = obj_items.nomenclature_name_id
+    group by rubr_item_nomenclatures.id, rubr_item_nomenclatures.name
+    having coalesce(sum(obj_items.quantity), 0) = 0;
