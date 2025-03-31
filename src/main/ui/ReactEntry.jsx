@@ -1,28 +1,32 @@
 import React from "react";
-import {FirstReactComponent} from "./component/FirstReactComponent";
 import * as ReactDOM from 'react-dom';
-import './styles/SpecCourseStyles.css'
+import './styles/SpecCourseStyles.css';
 import {ReactComponentWithRestExample} from "./component/ReactComponentWithRestExample";
-import {TestTableComponent} from "./component/TestTableComponent";
 import {ReactComponentWithNomenclature} from "./component/ReactComponentWithNomenclature";
+import Menu from "./component/Menu";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route
+} from "react-router-dom";
 
 console.log('hello from js world!');
 
 const ReactApp = () => {
     return (
-        <div>
-            <hr />
-            <TestTableComponent />
-            <hr />
-            FirstReactComponent:
-            <FirstReactComponent />
-            <hr />
-            ReactComponentWithRestExample:
-            <ReactComponentWithRestExample />
-            <hr />
-            ReactComponentWithNomenclature:
-            <ReactComponentWithNomenclature />
-        </div>
+         // <div>
+         //      <hr />
+         //      ReactComponentWithNomenclature:
+         //      <ReactComponentWithNomenclature />
+         //  </div>
+        <Router>
+             <Menu />
+             <Routes>
+                 <Route path="/nomenclature" element={<ReactComponentWithNomenclature />} />
+                 <Route path="/items" element={<ReactComponentWithRestExample />} />
+                 <Route path="/requests" element={<ReactComponentWithRestExample />} />
+             </Routes>
+        </Router>
     )
 }
 
