@@ -1,4 +1,4 @@
-table {
+/*table {
     border-collapse: collapse;
     border-color: #7fffd4;
     border: 2px solid;
@@ -24,6 +24,6 @@ table td:last-of-type {
     text-align: center;
 }
 
-table tbody > tr:nth-of-type(even) {
+    table tbody > tr:nth-of-type(even) {
     background-color: #00ffff;
-}
+}*/
