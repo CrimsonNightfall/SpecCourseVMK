@@ -4,16 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import ru.msu.speccoursevmk.api.EquipmentAPI;
 import ru.msu.speccoursevmk.e.Items;
+import ru.msu.speccoursevmk.e.NomencaltureListResponse;
 import ru.msu.speccoursevmk.e.Nomenclature;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -46,10 +49,15 @@ public class EquipmentRestController {
     }
 
     @GetMapping("/nomenclatures")
-    public ResponseEntity<List<Nomenclature>> getNomenclatures() {
+    public ResponseEntity<NomencaltureListResponse> getNomenclatures(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "displayLimit", required = false, defaultValue = "10") int displayLimit) {
 //        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
-        String sSQL = "SELECT * FROM rubr_item_nomenclatures";
-        List<Map<String, Object>> maps = template.queryForList(sSQL);
+        String sSQL = "SELECT * FROM rubr_item_nomenclatures ORDER BY id ASC OFFSET ? LIMIT ?";
+        String sSQLcount = "SELECT count(*) as count from rubr_item_nomenclatures";
+        Integer count = template.queryForObject(sSQLcount, Integer.class);
+        List<Map<String, Object>> maps = template.queryForList(sSQL, (page - 1) * displayLimit, displayLimit);
+//        String sSQL = "SELECT * FROM rubr_item_nomenclatures ORDER BY id ASC OFFSET ? LIMIT ?";
+//        List<Map<String, Object>> maps = template.queryForList(sSQL, (page - 1) * displayLimit, displayLimit);
+//        List<Map<String, Object>> maps = template.queryForList(sSQL);
         var nomenclatures = new ArrayList<Nomenclature>();
         maps.forEach(entity -> {
             var curEntity = new Nomenclature();
@@ -63,7 +71,10 @@ public class EquipmentRestController {
             curEntity.setUpdateTime(curUpdateTime.toInstant());
             nomenclatures.add(curEntity);
         });
-        return ResponseEntity.ok(nomenclatures);
+        var nomenclatureListResponse = new NomencaltureListResponse();
+        nomenclatureListResponse.setNomenclatures(nomenclatures);
+        nomenclatureListResponse.setCount(count);
+        return ResponseEntity.ok(nomenclatureListResponse);
     }
 
     @PutMapping("/add-nomenclature")
@@ -82,8 +93,9 @@ public class EquipmentRestController {
 
     @PutMapping("/edit-nomenclature")
     public ResponseEntity<Void> editNomenclature(@RequestBody Nomenclature nomenclature) {
-        String sSQL = "UPDATE rubr_item_nomenclatures SET name = ?, update_time = CURRENT_TIMESTAMP WHERE id = ?";
-        template.update(sSQL, nomenclature.getName(), nomenclature.getId());
+        Date now = Date.from(Instant.now());
+        String sSQL = "UPDATE rubr_item_nomenclatures SET name = ?, update_time = ? WHERE id = ?";
+        template.update(sSQL, nomenclature.getName(), now, nomenclature.getId());
         return ResponseEntity.ok().build();
     }
 }
