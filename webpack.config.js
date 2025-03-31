@@ -2,13 +2,16 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
+const WebpackCopyOutputOnBuildPlugin = require("webpack-copy-output-on-build-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
 const isDebug = process.env.npm_lifecycle_event !== 'build_PROD';
+const isDevInplace = process.env.npm_lifecycle_event === 'build_DEV_INPLACE';
 
 const PATHS = {
     source: path.join(__dirname, 'src/main/ui'),
-    build: path.join(__dirname, 'src/main/resources/static/build')
+    build: path.join(__dirname, 'src/main/resources/static/build'),
+    target_build: path.join(__dirname, 'target/classes/static/build'),
 };
 
 module.exports = {
@@ -64,7 +67,11 @@ module.exports = {
         }),
         new SimpleProgressWebpackPlugin({
             format: process.stderr.isTTY ? 'compact' : 'simple'
-        })
+        }),
+        ...(isDevInplace ? [new WebpackCopyOutputOnBuildPlugin({
+            copyPaths: [PATHS.target_build],
+            logCopy: true,
+        })] : []),
     ],
     optimization: {
         minimize: !isDebug,
