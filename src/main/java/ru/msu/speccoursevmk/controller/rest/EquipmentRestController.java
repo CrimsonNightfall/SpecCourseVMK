@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import ru.msu.speccoursevmk.api.EquipmentAPI;
 import ru.msu.speccoursevmk.e.Items;
-import ru.msu.speccoursevmk.e.NomencaltureListResponse;
+import ru.msu.speccoursevmk.e.NomenclatureListResponse;
 import ru.msu.speccoursevmk.e.Nomenclature;
 
 import javax.sql.DataSource;
@@ -49,7 +48,7 @@ public class EquipmentRestController {
     }
 
     @GetMapping("/nomenclatures")
-    public ResponseEntity<NomencaltureListResponse> getNomenclatures(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "displayLimit", required = false, defaultValue = "10") int displayLimit) {
+    public ResponseEntity<NomenclatureListResponse> getNomenclatures(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "displayLimit", required = false, defaultValue = "10") int displayLimit) {
 //        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
         String sSQL = "SELECT * FROM rubr_item_nomenclatures ORDER BY id ASC OFFSET ? LIMIT ?";
         String sSQLcount = "SELECT count(*) as count from rubr_item_nomenclatures";
@@ -71,7 +70,7 @@ public class EquipmentRestController {
             curEntity.setUpdateTime(curUpdateTime.toInstant());
             nomenclatures.add(curEntity);
         });
-        var nomenclatureListResponse = new NomencaltureListResponse();
+        var nomenclatureListResponse = new NomenclatureListResponse();
         nomenclatureListResponse.setNomenclatures(nomenclatures);
         nomenclatureListResponse.setCount(count);
         return ResponseEntity.ok(nomenclatureListResponse);
