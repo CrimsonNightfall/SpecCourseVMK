@@ -25,7 +25,7 @@ const ReactComponentWithNomenclature = () => {
 
     // const paginatedlist = list.slice((page - 1) * displayLimit, page * displayLimit);
 
-    function loadDataWithCond(displayLimit = 10, page = 1) {
+    function loadDataWithCond(page = 1, displayLimit = 10) {
         console.log('loadDataWithCond');
         setPage(page);
         setDisplayLimit(displayLimit);
@@ -63,68 +63,57 @@ const ReactComponentWithNomenclature = () => {
     }
 
     return (
-        <div>
-            <div>
-                <select className="select-label" value={displayLimit} onChange={(e) => {
-                    //setDisplayLimit((Number(e.target.value)));
-                    // setItemsPerPage((Number(e.target.value)));
-                    // setPage(1);
-                    loadDataWithCond(Number(e.target.value), 1);
-                }}>
-                    <option value="5" onClick={event => {
-                        //loadDataWithCond();
-                    }}>5</option>
-                    <option value="10" onClick={event => {
-                        //loadDataWithCond();
-                    }}>10</option>
-                    <option value="15" onClick={event => {
-                        //loadDataWithCond();
-                    }}>15</option>
-                </select>
-            </div>
-            <div className="pagination">
-                <label>
-                    Страница:
-                    <select value={page} onChange={(e) => {
-                        // setPage(Number(e.target.value));
-                        // setDisplayLimit(itemsPerPage);
-                        loadDataWithCond(displayLimit, Number(e.target.value));
-                    }} disabled={totalPages <= 1}>
+        <div className="template">
+            <div className="template__main">
+                <div>
+                    <label>
+                        Показ.:
+                        <select className="Select Select_style_simple Select_size_n Select_darkened" value={displayLimit} onChange={(e) => {
+                            loadDataWithCond(1, Number(e.target.value));
+                        }}>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                        </select>
+                    </label>
+                </div>
+                <div className="pagination">
+                    <label>
+                        Стр.:
                         {pageOptions.map(pageNum => (
-                            <option key={pageNum} value={pageNum} onClick={event => {
-                                //loadDataWithCond();
-                            }}>
+                            <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" key={pageNum} onClick={(e) => {
+                                loadDataWithCond(pageNum, displayLimit);
+                            }} disabled={pageNum === page}>
                                 {pageNum}
-                            </option>
+                            </button>
                         ))}
-                    </select>
-                    <span>из {totalPages}</span>
-                </label>
+                    </label>
+                </div>
+                <table className="table table_style_simple w-100" style={{
+                    borderCollapse: "separate",
+                    borderSpacing: "0px",
+                    tableLayout: "fixed"
+                }}>
+                    <thead className="table__head">
+                        <tr className="table__row">
+                            <th className="table__cell wp-40" rowSpan={1}>ИД</th>
+                            <th className="table__cell wp-350" rowSpan={1}>Наименование номенклатуры</th>
+                            <th className="table__cell wp-180" rowSpan={1}>Время создания</th>
+                            <th className="table__cell wp-180" rowSpan={1}>Время обновления</th>
+                        </tr>
+                    </thead>
+                    <tbody className="table__body">
+                        {list.map((row, index) => {
+                            //if (index >= (page - 1) * displayLimit && index < (displayLimit * page)) {
+                                return (
+                                    <ListItemComponent row={row} index={index} loadDataWithCond={loadDataWithCond} page={page} displayLimit={displayLimit} key={row.id}/>
+                                );
+                            //}
+                        })}
+                        <ListItemComponent row={null} index={-1} loadDataWithCond={loadDataWithCond} key={null}/>
+                    </tbody>
+                </table>
             </div>
-            <table className="table table_style_simple w-100" style={{
-                borderCollapse: "separate",
-                borderSpacing: "0px",
-                tableLayout: "fixed"
-            }}>
-                <thead className="table__head">
-                    <tr className="table__row">
-                        <th className="table__cell wp-40" rowSpan={1}>ИД</th>
-                        <th className="table__cell wp-350" rowSpan={1}>Наименование номенклатуры</th>
-                        <th className="table__cell wp-180" rowSpan={1}>Время создания</th>
-                        <th className="table__cell wp-180" rowSpan={1}>Время обновления</th>
-                    </tr>
-                </thead>
-                <tbody className="table__body">
-                    {list.map((row, index) => {
-                        //if (index >= (page - 1) * displayLimit && index < (displayLimit * page)) {
-                            return (
-                                <ListItemComponent row={row} index={index} loadDataWithCond={loadDataWithCond} key={row.id}/>
-                            );
-                        //}
-                    })}
-                    <ListItemComponent row={null} index={-1} loadDataWithCond={loadDataWithCond} key={null}/>
-                </tbody>
-            </table>
         </div>
     )
 }
@@ -166,7 +155,7 @@ const ListItemComponent = (props) => {
                         <input className="Input Input_style_simple Input_size_m" value={nameToSave} onChange={event => setNameToSave(event.target.value)}/>
                         <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={event => {
                             submitRow().then(value => {
-                                props.loadDataWithCond();
+                                props.loadDataWithCond(props.page, props.displayLimit);
                             })
                         }}> <span className="Btn__text" style={{
                             textAlign: "right"
@@ -191,7 +180,7 @@ const ListItemComponent = (props) => {
                                     <input className="Input Input_style_simple Input_size_m" value={nameToEdit} onChange={event => setNameToEdit(event.target.value)}/>
                                     <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={event => {
                                         editRow().then(value => {
-                                            props.loadDataWithCond();
+                                            props.loadDataWithCond(props.page, props.displayLimit);
                                             setEdit(false);
                                         })
                                     }}><span className="Btn__text">Изменить</span></button>

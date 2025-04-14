@@ -51,9 +51,10 @@ create table obj_items
         constraint obj_items_rubr_item_nomenclatures_id_fk
             references rubr_item_nomenclatures,
     quantity integer not null,
-    create_time timestamp with time zone default current_timestamp,
-    update_time timestamp with time zone default current_timestamp,
     create_user_id integer not null
         constraint obj_items_obj_users_id_fk
-            references obj_users
+            references obj_users,
+    batch_name text not null,
+    create_time timestamp with time zone default current_timestamp,
+    update_time timestamp with time zone default current_timestamp
 );

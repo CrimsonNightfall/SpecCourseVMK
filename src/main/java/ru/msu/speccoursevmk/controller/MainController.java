@@ -12,7 +12,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @Controller
 public class MainController {
-    @RequestMapping(value = "/*")
+    @RequestMapping(value = { "/*", "/store/*", "/user/*" })
     public String redirectToMain(Model model) {
         long jsBundleLastModified = ResourceUtils.getLastModified("/static/build/speccourse/speccourse.bundle.js");
         long cssBundleLastModified = ResourceUtils.getLastModified("/static/build/speccourse/speccourse.css");

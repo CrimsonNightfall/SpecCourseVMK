@@ -7,7 +7,7 @@ import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
-public class Items {
+public class ItemsWithNames {
     private int id;
     private int nomenclatureId;
     private int count;
@@ -15,4 +15,5 @@ public class Items {
     private String batchName;
     private Instant createTime;
     private Instant updateTime;
+    private String nomenclatureName;
 }
