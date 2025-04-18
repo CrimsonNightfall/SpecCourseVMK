@@ -2,12 +2,14 @@ import React, {useEffect, useState} from 'react';
 import '../styles/template_base.css';
 import dayjs from 'dayjs';
 
-const ReactComponentWithItems = () => {
+const ReactComponentWithRequests = () => {
     const [displayLimit, setDisplayLimit] = useState(10);
     const [page, setPage] = useState(1);
 
     const [list, setList] = useState([]);
-    const [listOfNom, setListOfNum] = useState([]);
+    const [listOfUsers, setListOfUsers] = useState([]);
+    const [listOfNom, setListOfNom] = useState([]);
+    const [listOfStatuses, setListOfStatuses] = useState([]);
     const [count, setCount] = useState(0);
 
     const totalPages = Math.ceil(count / displayLimit);
@@ -16,13 +18,15 @@ const ReactComponentWithItems = () => {
 
     useEffect(() => {
         console.log('useEffect, will fetch');
+        loadListOfUsers();
         loadListOfNomenclatures();
+        loadListOfStatuses();
         loadDataWithCond();
     }, []);
 
-    function loadListOfNomenclatures() {
-        console.log('load list of nomenclatures');
-        return fetch(`/api/equipment/list-of-nomenclatures`, {
+    function loadListOfUsers() {
+        console.log('load list of users');
+        return fetch(`/api/requests/list-of-users`, {
             "method": "GET"
         }).then(response => {
             console.log('receiver response, status', response.status);
@@ -30,7 +34,39 @@ const ReactComponentWithItems = () => {
                 return response.json()
             }
         }).then(list => {
-            setListOfNum(list)
+            setListOfUsers(list)
+        }).catch(reason => {
+            console.error('error', reason);
+        });
+    }
+
+    function loadListOfNomenclatures() {
+        console.log('load list of nomenclatures');
+        return fetch(`/api/requests/list-of-nomenclatures`, {
+            "method": "GET"
+        }).then(response => {
+            console.log('receiver response, status', response.status);
+            if (response.ok) {
+                return response.json()
+            }
+        }).then(list => {
+            setListOfNom(list)
+        }).catch(reason => {
+            console.error('error', reason);
+        });
+    }
+
+    function loadListOfStatuses() {
+        console.log('load list of statuses');
+        return fetch(`/api/requests/list-of-statuses`, {
+            "method": "GET"
+        }).then(response => {
+            console.log('receiver response, status', response.status);
+            if (response.ok) {
+                return response.json()
+            }
+        }).then(list => {
+            setListOfStatuses(list)
         }).catch(reason => {
             console.error('error', reason);
         });
@@ -40,7 +76,7 @@ const ReactComponentWithItems = () => {
         console.log('loadDataWithCond');
         setPage(page);
         setDisplayLimit(displayLimit);
-        return fetch(`/api/equipment/list?page=${page}&displayLimit=${displayLimit}`, {
+        return fetch(`/api/requests/list?page=${page}&displayLimit=${displayLimit}`, {
             "method": "GET"
         }).then(response => {
             console.log('receiver response, status', response.status);
@@ -48,7 +84,7 @@ const ReactComponentWithItems = () => {
                 return response.json()
             }
         }).then(response => {
-            setList(response.items);
+            setList(response.requests);
             setCount(response.count)
         }).catch(reason => {
             console.error('error', reason);
@@ -93,19 +129,20 @@ const ReactComponentWithItems = () => {
                         <th className="table__cell wp-150" rowSpan={1}>Наименование номенклатуры</th>
                         <th className="table__cell wp-100" rowSpan={1}>Количество</th>
                         <th className="table__cell wp-150" rowSpan={1}>Создатель</th>
-                        <th className="table__cell wp-150" rowSpan={1}>Наименование партии</th>
-                        <th className="table__cell wp-120" rowSpan={1}>Время создания</th>
+                        <th className="table__cell wp-150" rowSpan={1}>Статус</th>
+                        <th className="table__cell wp-120" rowSpan={1}>Время регистрации</th>
                         <th className="table__cell wp-120" rowSpan={1}>Время обновления</th>
+                        <th className="table__cell wp-120" rowSpan={1}>Время завершения</th>
                         <th className="table__cell wp-120" rowSpan={1}>Управление</th>
                     </tr>
                     </thead>
                     <tbody className="table__body">
                     {list.map((row, index) => {
-                         return (
-                            <ListComponent row={row} index={index} loadDataWithCond={loadDataWithCond} listOfNom={listOfNom} page={page} displayLimit={displayLimit} key={row.id}/>
+                        return (
+                            <ListComponent row={row} index={index} loadDataWithCond={loadDataWithCond} listOfUsers={listOfUsers} listOfNom={listOfNom} page={page} displayLimit={displayLimit} key={row.id}/>
                         );
                     })}
-                    <ListComponent row={null} index={-1} loadDataWithCond={loadDataWithCond} listOfNom={listOfNom} key={null}/>
+                    <ListComponent row={null} index={-1} loadDataWithCond={loadDataWithCond} listOfUsers={listOfUsers} listOfNom={listOfNom} key={null}/>
                     </tbody>
                 </table>
             </div>
@@ -114,46 +151,51 @@ const ReactComponentWithItems = () => {
 }
 
 const ListComponent = (props) => {
-    const [nameIdToEdit, setNameIdToEdit] = useState('');
-    const [batchNameToEdit, setBatchNameToEdit] = useState('');
+    const [nameIdToEdit, setNameToEdit] = useState('');
     const [quantityToEdit, setQuantityToEdit] = useState('');
+    const [statusIdToEdit, setStatusIdToEdit] = useState('');
     const [nameIdToSave, setNameIdToSave] = useState('');
     const [quantityToSave, setQuantityToSave] = useState('');
-    const [batchNameToSave, setBatchNameToSave] = useState('');
+    const [userNameIdToSave, setUserNameIdToSave] = useState('');
     const [edit, setEdit] = useState(false);
     // console.log(props, 'myprops');
 
     function editRow() {
         console.log('edit');
-        return fetch("/api/equipment/edit", {
+        return fetch("/api/requests/edit", {
             "headers": {"content-type": "application/json"},
-            "body": JSON.stringify({"id": props.row.id, "nomenclatureId": nameIdToEdit, "count": quantityToEdit, "batchName": batchNameToEdit}),
+            "body": JSON.stringify({"id": props.row.id, "quantity": quantityToEdit, "nomenclatureId": nameIdToEdit, "statusId": statusIdToEdit}),
             "method": "PUT"
         });
     }
+    //
+    // function editCount() {
+    //     console.log('edit count');
+    //     return fetch("/api/requests/edit-count", {
+    //         "headers": {"content-type": "application/json"},
+    //         "body": JSON.stringify({"id": props.row.id, "count": quantityToEdit}),
+    //         "method": "PUT"
+    //     });
+    // }
 
     function submitRow() {
         console.log('submit');
-        return fetch("/api/equipment/add-item", {
+        return fetch("/api/requests/add", {
             "headers": {"content-type": "application/json"},
-            "body": JSON.stringify({"nomenclatureId": nameIdToSave, "count": quantityToSave, "batchName": batchNameToSave}),
+            "body": JSON.stringify({"quantity": quantityToSave, "nomenclatureId": nameIdToSave, "createUserId": userNameIdToSave}),
             "method": "PUT"
         });
     }
 
     return (
-        <tr className="table__row" key={props.index} style={{
-            borderCollapse: "separate",
-            borderSpacing: "0px",
-            tableLayout: "fixed"
-        }}>
+        <tr className="table__row" key={props.index}>
             {edit === true || props.index === -1 ? (
                 <>
                     <td className="table__cell wp-20 ta-c rowspan='1'" style={{
                         textAlign: "left"
                     }}> {edit && (
-                            <>{props.row.id}</>
-                        )}
+                        <>{props.row.id}</>
+                    )}
                         {!edit && (
                             <>{}</>
                         )}
@@ -197,35 +239,49 @@ const ListComponent = (props) => {
                             </>
                         )}
                     </td>
-                    <td className="table__cell wp-150 ta-c rowspan='1'" style={{
-                        textAlign: "center"
-                    }}>{edit && (
-                            <>{props.row.userName}</>
+                    <td className="table__cell wp-150 rowspan='1'">
+                        {edit && (
+                            <select className="Select Select_style_simple Select_size_n Select_darkened" value={userNameIdToSave} onChange={(event) => {
+                                setUserNameIdToSave(event.target.value);
+                            }}>
+                                <option value=""></option>
+                                {(props.listOfUsers).map((user) => (
+                                    <option key={user.id} value={user.id}>{user.name}</option>
+                                ))}
+                            </select>
                         )}
                         {!edit && (
-                            <>{}</>
+                            <>
+                                {/*<input className="Input Input_style_simple Input_size_n" value={nameToSave} onChange={event => setNameToSave(event.target.value)}/>*/}
+                                <select className="Select Select_style_simple Select_size_n Select_darkened" value={userNameIdToSave} onChange={(e) => {
+                                    setUserNameIdToSave(e.target.value);
+                                }}>
+                                    <option value=""></option>
+                                    {(props.listOfUsers).map((user) => (
+                                        <option key={user.id} value={user.id}>{user.name}</option>
+                                    ))}
+                                </select>
+                            </>
                         )}
                     </td>
                     <td className="table__cell wp-150 ta-c rowspan='1'" style={{
                         textAlign: "center"
                     }}>{edit && (
-                            <>
-                                <input className="Input Input_style_simple Input_size_n" value={batchNameToEdit} onChange={event => {
-                                    setBatchNameToEdit(event.target.value);
-                                }}/>
-                            </>
-                        )}
+                        <>
+                            <input className="Input Input_style_simple Input_size_n" value={statusIdToEdit} onChange={event => {
+                                setStatusIdToEdit(event.target.value);
+                            }}/>
+                        </>
+                    )}
                         {!edit && (
-                            <>
-                                <input className={(batchNameToSave === '' ? "Input_state_warning " : "") + "Input Input_style_simple Input_size_n"} value={batchNameToSave} onChange={event => setBatchNameToSave(event.target.value)}/>
-                            </>
+                            {}
                         )}
                     </td>
                     <td className="table__cell wp-120 ta-c rowspan='1'" style={{
                         textAlign: "center"
                     }}>{edit && (
-                            <>{dayjs(props.row.createTime).format('YYYY.MM.DD HH:mm')}</>
-                        )}
+                        <>{dayjs(props.row.registrationTime).format('YYYY.MM.DD HH:mm')}</>
+                    )}
                         {!edit && (
                             <>{}</>
                         )}
@@ -239,20 +295,15 @@ const ListComponent = (props) => {
                             <>{}</>
                         )}
                     </td>
-                    {/*<td>*/}
-                    {/*    <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={event => {*/}
-                    {/*        if (quantityToSave === '') {*/}
-                    {/*            alert('Вы не ввели количество');*/}
-                    {/*            return;*/}
-                    {/*        }*/}
-                    {/*        submitRow().then(value => {*/}
-                    {/*            props.loadDataWithCond(props.page, props.displayLimit);*/}
-                    {/*            setAdd(false);*/}
-                    {/*        })*/}
-                    {/*    }}> <span className="Btn__text" style={{*/}
-                    {/*        textAlign: "right"*/}
-                    {/*    }}>Отправить</span></button>*/}
-                    {/*</td>*/}
+                    <td className="table__cell wp-120 ta-c rowspan='1'" style={{
+                        textAlign: "center"
+                    }}>{edit && (
+                        <>{dayjs(props.row.completionTime).format('YYYY.MM.DD HH:mm')}</>
+                    )}
+                        {!edit && (
+                            <>{}</>
+                        )}
+                    </td>
                     <td className="table__cell wp-120 ta-c rowspan='1'" style={{
                         textAlign: "center"
                     }}>
@@ -277,10 +328,6 @@ const ListComponent = (props) => {
                                         alert('Вы не ввели количество');
                                         return;
                                     }
-                                    if (batchNameToSave === '') {
-                                        alert('Вы не ввели название партии');
-                                        return;
-                                    }
                                     submitRow().then(value => {
                                         props.loadDataWithCond(props.page, props.displayLimit);
                                     })
@@ -293,44 +340,39 @@ const ListComponent = (props) => {
                 <>
                     <td className="table__cell wp-20 ta-c rowspan='1'" style={{
                         textAlign: "left"
-                    }}>{props.row.id}
-                    </td>
+                    }}>{props.row.id}</td>
                     <td className="table__cell wp-150 rowspan='1'">
                         {props.row.nomenclatureName}
                     </td>
                     <td className="table__cell wp-100 ta-c rowspan='1'" style={{
                         textAlign: "center"
-                    }}>
-                        {props.row.count}
-                    </td>
+                    }}>{props.row.quantity}</td>
                     <td className="table__cell wp-150 ta-c rowspan='1'" style={{
                         textAlign: "center"
-                    }}>{props.row.userName}
-                    </td>
+                    }}>{props.row.userName}</td>
                     <td className="table__cell wp-150 ta-c rowspan='1'" style={{
                         textAlign: "center"
-                    }}>
-                        {props.row.batchName}
-                    </td>
+                    }}>{props.row.statusName}</td>
                     <td className="table__cell wp-120 ta-c rowspan='1'" style={{
                         textAlign: "center"
-                    }}>{dayjs(props.row.createTime).format('YYYY.MM.DD HH:mm')}
-                    </td>
+                    }}>{dayjs(props.row.registrationTime).format('YYYY.MM.DD HH:mm')}</td>
                     <td className="table__cell wp-120 ta-c rowspan='1'" style={{
                         textAlign: "center"
-                    }}>{dayjs(props.row.updateTime).format('YYYY.MM.DD HH:mm')}
-                    </td>
+                    }}>{dayjs(props.row.updateTime).format('YYYY.MM.DD HH:mm')}</td>
+                    <td className="table__cell wp-120 ta-c rowspan='1'" style={{
+                        textAlign: "center"
+                    }}>{dayjs(props.row.completionTime).format('YYYY.MM.DD HH:mm')}</td>
                     <td className="table__cell wp-120 ta-c rowspan='1'" style={{
                         textAlign: "center"
                     }}>{
                         <>
-                        <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={() => {
-                            setEdit(true);
-                            setNameIdToEdit(props.row.nomenclatureId);
-                            setQuantityToEdit(props.row.count);
-                            setBatchNameToEdit(props.row.batchName)
-                        }}>
-                            <span className="Btn__text">Редактировать</span>
+                            <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={() => {
+                                setEdit(true);
+                                setNameIdToEdit(props.row.nomenclatureId);
+                                setQuantityToEdit(props.row.count);
+                                setStatusIdToEdit(props.row.statusId)
+                            }}>
+                                <span className="Btn__text">Редактировать</span>
                                 {/*✏️*/}
                             </button>
                         </>
@@ -341,4 +383,4 @@ const ListComponent = (props) => {
     )
 }
 
-export {ReactComponentWithItems};
+export {ReactComponentWithRequests};

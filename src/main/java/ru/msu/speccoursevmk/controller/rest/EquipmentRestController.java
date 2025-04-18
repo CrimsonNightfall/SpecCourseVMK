@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import ru.msu.speccoursevmk.api.EquipmentAPI;
+import ru.msu.speccoursevmk.api.RequestProcessingAPI;
 import ru.msu.speccoursevmk.e.*;
 
 import javax.sql.DataSource;
@@ -25,6 +26,9 @@ public class EquipmentRestController {
     private final DataSource dataSource;
 
     @Autowired JdbcTemplate template;
+
+    @Autowired
+    RequestProcessingAPI requestProcessingAPI;
 
     @GetMapping("/list-of-nomenclatures")
     public ResponseEntity<List<Nomenclature>> getListOfNomenclatures() {
@@ -54,10 +58,12 @@ public class EquipmentRestController {
     @GetMapping("/list")
     public ResponseEntity<ItemsListResponse> getList(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "displayLimit", required = false, defaultValue = "10") int displayLimit) {
 //        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
-        String sSQL = "SELECT obj_items.*, rubr_item_nomenclatures.name as nomenclatureName\n" +
+        String sSQL = "SELECT obj_items.*, rubr_item_nomenclatures.name AS nomenclatureName, obj_users.full_name AS userName\n" +
                 "FROM obj_items\n" +
                 "LEFT JOIN rubr_item_nomenclatures\n" +
-                "ON obj_items.nomenclature_name_id = rubr_item_nomenclatures.id" +
+                "ON obj_items.nomenclature_name_id = rubr_item_nomenclatures.id\n" +
+                "LEFT JOIN obj_users\n" +
+                "ON obj_items.create_user_id = obj_users.id\n" +
                 " ORDER BY id ASC OFFSET ? LIMIT ?";
         String sSQLcount = "SELECT count(*) as count from obj_items";
         Integer count = template.queryForObject(sSQLcount, Integer.class);
@@ -73,6 +79,8 @@ public class EquipmentRestController {
             curEntity.setCount(curCount);
             var curCreateUserId = (int) entity.get("create_user_id");
             curEntity.setCreateUserId(curCreateUserId);
+            var curUserName = entity.get("userName");
+            curEntity.setUserName(String.valueOf(curUserName));
             var curBatchName = entity.get("batch_name");
             curEntity.setBatchName(String.valueOf(curBatchName));
             var curCreateTime = (Timestamp) entity.get("create_time");
@@ -123,21 +131,21 @@ public class EquipmentRestController {
 
     @PutMapping("/add-item")
     public ResponseEntity<Void> addItems(@RequestBody ItemsWithNames items) {
-        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
+//        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
         //template.update(sSQLGetId, items.getNomenclatureName());
-        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, items.getNomenclatureName());
+//        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, items.getNomenclatureName());
         String sSQL = "INSERT INTO obj_items (nomenclature_name_id, quantity, create_user_id, batch_name) VALUES (?, ?, ?, ?)";
-        template.update(sSQL, nomId, items.getCount(), 1, items.getBatchName());
+        template.update(sSQL, items.getNomenclatureId(), items.getCount(), 1, items.getBatchName());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/edit")
     public ResponseEntity<Void> edit(@RequestBody ItemsWithNames items) {
         Date now = Date.from(Instant.now());
-        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
-        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, items.getNomenclatureName());
-        String sSQL = "UPDATE obj_items SET nomenclature_name_id = ?, update_time = ? WHERE id = ?";
-        template.update(sSQL, nomId, now, items.getId());
+//        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
+//        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, items.getNomenclatureName());
+        String sSQL = "UPDATE obj_items SET nomenclature_name_id = ?, quantity = ?, batch_name = ?, update_time = ? WHERE id = ?";
+        template.update(sSQL, items.getNomenclatureId(), items.getCount(), items.getBatchName(), now, items.getId());
         return ResponseEntity.ok().build();
     }
 
@@ -146,6 +154,7 @@ public class EquipmentRestController {
         Date now = Date.from(Instant.now());
         String sSQL = "UPDATE obj_items SET quantity = ?, update_time = ? WHERE id = ?";
         template.update(sSQL, items.getCount(), now, items.getId());
+        requestProcessingAPI.afterRequestUpdate();
         return ResponseEntity.ok().build();
     }
 

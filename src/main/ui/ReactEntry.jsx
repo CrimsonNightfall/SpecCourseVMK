@@ -4,6 +4,7 @@ import './styles/SpecCourseStyles.css';
 import {ReactComponentWithRestExample} from "./component/ReactComponentWithRestExample";
 import {ReactComponentWithNomenclature} from "./component/ReactComponentWithNomenclature";
 import {ReactComponentWithItems} from "./component/ReactComponentWithItems";
+import {ReactComponentWithRequests} from "./component/ReactComponentWithRequests";
 import Menu from "./component/Menu";
 import {
     BrowserRouter as Router,
@@ -25,7 +26,7 @@ const ReactApp = () => {
             <Routes>
                     <Route path="/store/nomenclature" element={<ReactComponentWithNomenclature />} />
                     <Route path="/store/items" element={<ReactComponentWithItems />} />
-                    <Route path="/store/requests" element={<ReactComponentWithRestExample />} />
+                    <Route path="/store/requests" element={<ReactComponentWithRequests />} />
                 <Route path="/user"/>
             </Routes>
         </Router>

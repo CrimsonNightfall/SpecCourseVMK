@@ -7,14 +7,16 @@ import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
-public class ItemsWithNames {
+public class RequestWithNames {
     private int id;
     private int nomenclatureId;
-    private int count;
+    private int statusId;
+    private int quantity;
     private int createUserId;
-    private String userName;
-    private String batchName;
-    private Instant createTime;
+    private Instant registrationTime;
     private Instant updateTime;
+    private Instant completionTime;
+    private String userName;
     private String nomenclatureName;
+    private String statusName;
 }
