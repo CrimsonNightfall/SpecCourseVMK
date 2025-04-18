@@ -18,6 +18,16 @@ create table rubr_item_nomenclatures
     update_time timestamp with time zone default current_timestamp
 );
 
+create table rubr_request_statuses
+(
+    id SERIAL not null
+        constraint rubr_request_statuses_pk
+            primary key,
+    name text not null,
+    create_time timestamp with time zone default current_timestamp,
+    update_time timestamp with time zone default current_timestamp
+);
+
 create table rubr_list
 (
     id SERIAL not null
@@ -57,4 +67,24 @@ create table obj_items
     batch_name text not null,
     create_time timestamp with time zone default current_timestamp,
     update_time timestamp with time zone default current_timestamp
+);
+
+create table obj_requests
+(
+    id SERIAL not null
+        constraint obj_requests_pk
+            primary key,
+    nomenclature_name_id integer not null
+        constraint obj_requests_rubr_item_nomenclatures_id_fk
+            references rubr_item_nomenclatures,
+    status_id integer not null
+        constraint obj_requests_rubr_request_statuses_id_fk
+            references rubr_request_statuses,
+    quantity integer not null,
+    create_user_id integer not null
+        constraint obj_items_obj_users_id_fk
+            references obj_users,
+    registration_time timestamp with time zone default current_timestamp,
+    update_time timestamp with time zone default current_timestamp,
+    completion_time timestamp with time zone
 );
