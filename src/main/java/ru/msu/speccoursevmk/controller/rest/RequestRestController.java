@@ -38,7 +38,7 @@ public class RequestRestController {
             curEntity.setId(curIdValue);
             var curLogin = entity.get("login");
             curEntity.setName(String.valueOf(curLogin));
-            var curName = entity.get("name");
+            var curName = entity.get("full_name");
             curEntity.setName(String.valueOf(curName));
             var curRoleValue = (int) entity.get("role_id");
             curEntity.setRole(curRoleValue);
@@ -125,7 +125,9 @@ public class RequestRestController {
             var curUpdateTime = (Timestamp) entity.get("update_time");
             curEntity.setUpdateTime(curUpdateTime.toInstant());
             var curCompletionTime = (Timestamp) entity.get("completion_time");
-            curEntity.setCompletionTime(curCompletionTime.toInstant());
+            if (curCompletionTime != null) {
+                curEntity.setCompletionTime(curCompletionTime.toInstant());
+            }
             var curUserName = entity.get("user_name");
             curEntity.setUserName(String.valueOf(curUserName));
             var curNomName = entity.get("nomenclature_name");
@@ -140,14 +142,45 @@ public class RequestRestController {
         return ResponseEntity.ok(requestListResponse);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<RequestWithNames> getRequest(@PathVariable(value = "id") int iD) {
+//        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        String sSQL = "SELECT obj_requests.*, obj_users.full_name AS user_name, rubr_item_nomenclatures.name AS nomenclature_name, rubr_request_statuses.name AS status_name\n" +
+                "FROM obj_requests\n" +
+                "LEFT JOIN rubr_item_nomenclatures\n" +
+                "ON obj_requests.nomenclature_name_id = rubr_item_nomenclatures.id\n" +
+                "LEFT JOIN obj_users\n" +
+                "ON obj_requests.create_user_id = obj_users.id\n" +
+                "LEFT JOIN rubr_request_statuses\n" +
+                "ON obj_requests.status_id = rubr_request_statuses.id\n" +
+                "WHERE obj_requests.id = ?";
+        Map<String, Object> entityMap = template.queryForMap(sSQL, iD);
+        RequestWithNames request = new RequestWithNames();
+        request.setId((int) entityMap.get("id"));
+        request.setNomenclatureId((int) entityMap.get("nomenclature_name_id"));
+        request.setStatusId((int) entityMap.get("status_id"));
+        request.setQuantity((int) entityMap.get("quantity"));
+        request.setCreateUserId((int) entityMap.get("create_user_id"));
+        request.setRegistrationTime(((Timestamp) entityMap.get("registration_time")).toInstant());
+        request.setUpdateTime(((Timestamp) entityMap.get("update_time")).toInstant());
+        var curCompletionTime = (Timestamp) entityMap.get("completion_time");
+        if (curCompletionTime != null) {
+            request.setCompletionTime(curCompletionTime.toInstant());
+        }
+        request.setUserName((String) entityMap.get("user_name"));
+        request.setNomenclatureName((String) entityMap.get("nomenclature_name"));
+        request.setStatusName((String) entityMap.get("status_name"));
+        return ResponseEntity.ok(request);
+    }
+
     @PutMapping("/add")
     public ResponseEntity<Void> add(@RequestBody RequestWithNames request) {
-        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
-        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, request.getNomenclatureName());
-        String sSQLGetUserId = "SELECT id FROM obj_users WHERE name = ?";
-        Integer userId = template.queryForObject(sSQLGetUserId, Integer.class, request.getUserName());
-        String sSQL = "INSERT INTO obj_requests (nomenclature_name_id, quantity, create_user_id) VALUES (?, ?, ?)";
-        template.update(sSQL, nomId, request.getQuantity(), userId);
+//        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
+//        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, request.getNomenclatureName());
+//        String sSQLGetUserId = "SELECT id FROM obj_users WHERE name = ?";
+//        Integer userId = template.queryForObject(sSQLGetUserId, Integer.class, request.getUserName());
+        String sSQL = "INSERT INTO obj_requests (nomenclature_name_id, quantity, create_user_id, status_id) VALUES (?, ?, ?, ?)";
+        template.update(sSQL, request.getNomenclatureId(), request.getQuantity(), request.getCreateUserId(), 3);
         return ResponseEntity.ok().build();
     }
 
@@ -156,7 +189,7 @@ public class RequestRestController {
         Date now = Date.from(Instant.now());
 //        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
 //        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, items.getNomenclatureName());
-        String sSQL = "UPDATE obj_items SET nomenclature_name_id = ?, quantity = ?, status_id = ?, update_time = ? WHERE id = ?";
+        String sSQL = "UPDATE obj_requests SET nomenclature_name_id = ?, quantity = ?, status_id = ?, update_time = ? WHERE id = ?";
         template.update(sSQL, request.getNomenclatureId(), request.getQuantity(), request.getStatusId(), now, request.getId());
         return ResponseEntity.ok().build();
     }
