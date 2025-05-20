@@ -5,6 +5,7 @@ import {ReactComponentWithRestExample} from "./component/ReactComponentWithRestE
 import {ReactComponentWithNomenclature} from "./component/ReactComponentWithNomenclature";
 import {ReactComponentWithItems} from "./component/ReactComponentWithItems";
 import {ReactComponentWithRequests} from "./component/ReactComponentWithRequests";
+import {ReactComponentWithUsers} from "./component/ReactComponentWithUsers";
 import {RequestPage} from "./component/RequestPage";
 import Menu from "./component/Menu";
 import {
@@ -25,7 +26,8 @@ const ReactApp = () => {
                     <Route path="/store/requests" element={<ReactComponentWithRequests />} />
                 <Route path="/store/requests/add" element={<RequestPage />} />
                 <Route path="/store/requests/:id" element={<RequestPage />} />
-                <Route path="/user"/>
+                <Route path="/user/list" element={<ReactComponentWithUsers />} />
+                <Route path="/login" element={<ReactComponentWithRestExample />} />
             </Routes>
         </Router>
 )

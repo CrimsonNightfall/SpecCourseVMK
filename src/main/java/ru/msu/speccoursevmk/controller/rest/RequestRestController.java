@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import ru.msu.speccoursevmk.api.RequestAPI;
+import ru.msu.speccoursevmk.api.RequestProcessingAPI;
 import ru.msu.speccoursevmk.e.*;
 
 import javax.sql.DataSource;
@@ -27,6 +28,9 @@ public class RequestRestController {
 
     @Autowired JdbcTemplate template;
 
+    @Autowired
+    RequestProcessingAPI requestProcessingAPI;
+
     @GetMapping("/list-of-users")
     public ResponseEntity<List<User>> getListOfUsers() {
         String sSQL = "SELECT * FROM obj_users ORDER BY id ASC";
@@ -41,7 +45,7 @@ public class RequestRestController {
             var curName = entity.get("full_name");
             curEntity.setName(String.valueOf(curName));
             var curRoleValue = (int) entity.get("role_id");
-            curEntity.setRole(curRoleValue);
+            curEntity.setRoleId(curRoleValue);
             var curCreateTime = (Timestamp) entity.get("create_time");
             curEntity.setCreateTime(curCreateTime.toInstant());
             var curUpdateTime = (Timestamp) entity.get("update_time");
@@ -102,8 +106,8 @@ public class RequestRestController {
                 "LEFT JOIN obj_users\n" +
                 "ON obj_requests.create_user_id = obj_users.id\n" +
                 "LEFT JOIN rubr_request_statuses\n" +
-                "ON obj_requests.status_id = rubr_request_statuses.id" +
-                " ORDER BY id ASC OFFSET ? LIMIT ?";
+                "ON obj_requests.status_id = rubr_request_statuses.id\n" +
+                "ORDER BY id DESC OFFSET ? LIMIT ?";
         String sSQLcount = "SELECT count(*) as count from obj_requests";
         Integer count = template.queryForObject(sSQLcount, Integer.class);
         List<Map<String, Object>> maps = template.queryForList(sSQL, (page - 1) * displayLimit, displayLimit);
@@ -139,6 +143,7 @@ public class RequestRestController {
         var requestListResponse = new RequestListResponse();
         requestListResponse.setRequests(requests);
         requestListResponse.setCount(count);
+        requestProcessingAPI.afterRequestUpdate();
         return ResponseEntity.ok(requestListResponse);
     }
 
@@ -181,6 +186,7 @@ public class RequestRestController {
 //        Integer userId = template.queryForObject(sSQLGetUserId, Integer.class, request.getUserName());
         String sSQL = "INSERT INTO obj_requests (nomenclature_name_id, quantity, create_user_id, status_id) VALUES (?, ?, ?, ?)";
         template.update(sSQL, request.getNomenclatureId(), request.getQuantity(), request.getCreateUserId(), 3);
+        requestProcessingAPI.afterRequestUpdate();
         return ResponseEntity.ok().build();
     }
 
@@ -189,8 +195,9 @@ public class RequestRestController {
         Date now = Date.from(Instant.now());
 //        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
 //        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, items.getNomenclatureName());
-        String sSQL = "UPDATE obj_requests SET nomenclature_name_id = ?, quantity = ?, status_id = ?, update_time = ? WHERE id = ?";
-        template.update(sSQL, request.getNomenclatureId(), request.getQuantity(), request.getStatusId(), now, request.getId());
+        String sSQL = "UPDATE obj_requests SET nomenclature_name_id = ?, quantity = ?, update_time = ? WHERE id = ?";
+        template.update(sSQL, request.getNomenclatureId(), request.getQuantity(), now, request.getId());
+        requestProcessingAPI.afterRequestUpdate();
         return ResponseEntity.ok().build();
     }
 }

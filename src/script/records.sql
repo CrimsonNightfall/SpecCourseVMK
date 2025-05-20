@@ -21,11 +21,11 @@ INSERT INTO obj_users (login, password, full_name, role_id, create_time, update_
 INSERT INTO obj_users (login, password, full_name, role_id, create_time, update_time) VALUES ('lartemieva', 'e03vo732l!', 'Артемьева Любовь Ивановна', 000002, DEFAULT, DEFAULT);
 INSERT INTO obj_users (login, password, full_name, role_id, create_time, update_time) VALUES ('mnikitin', 'kin18@qw&', 'Никитин Матвей Олегович', 000002, DEFAULT, DEFAULT);
 
-INSERT INTO obj_items (nomenclature_name_id, quantity, create_time, update_time) VALUES (000003, 100, DEFAULT, DEFAULT);
-INSERT INTO obj_items (nomenclature_name_id, quantity, create_time, update_time) VALUES (000004, 50, DEFAULT, DEFAULT);
-INSERT INTO obj_items (nomenclature_name_id, quantity, create_time, update_time) VALUES (000005, 25, DEFAULT, DEFAULT);
-INSERT INTO obj_items (nomenclature_name_id, quantity, create_time, update_time) VALUES (000006, 30, DEFAULT, DEFAULT);
-INSERT INTO obj_items (nomenclature_name_id, quantity, create_time, update_time) VALUES (000007, 17, DEFAULT, DEFAULT);
+INSERT INTO obj_items (nomenclature_name_id, quantity, create_user_id, batch_name, create_time, update_time) VALUES (000003, 100, 2, '100 маркеров Sharpie', DEFAULT, DEFAULT);
+INSERT INTO obj_items (nomenclature_name_id, quantity, create_user_id, batch_name, create_time, update_time) VALUES (000001, 200, 3, '200 пачек бумаг SvetoCopy', DEFAULT, DEFAULT);
+INSERT INTO obj_items (nomenclature_name_id, quantity, create_user_id, batch_name, create_time, update_time) VALUES (000012, 25, 1, '25 кабелей Southwire', DEFAULT, DEFAULT);
+INSERT INTO obj_items (nomenclature_name_id, quantity, create_user_id, batch_name, create_time, update_time) VALUES (000013, 30, 4, '30 книг AST', DEFAULT, DEFAULT);
+INSERT INTO obj_items (nomenclature_name_id, quantity, create_user_id, batch_name, create_time, update_time) VALUES (000007, 17, 5, '17 папок', DEFAULT, DEFAULT);
 
 INSERT INTO obj_requests (nomenclature_name_id, status_id, quantity, create_user_id, registration_time, update_time) VALUES (000001, 1, 100, 2, DEFAULT, DEFAULT);
 INSERT INTO obj_requests (nomenclature_name_id, status_id, quantity, create_user_id, registration_time, update_time) VALUES (000013, 1, 50, 4, DEFAULT, DEFAULT);

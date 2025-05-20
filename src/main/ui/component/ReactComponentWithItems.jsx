@@ -8,6 +8,7 @@ const ReactComponentWithItems = () => {
 
     const [list, setList] = useState([]);
     const [listOfNom, setListOfNum] = useState([]);
+    const [listOfUsers, setListOfUsers] = useState([]);
     const [count, setCount] = useState(0);
 
     const totalPages = Math.ceil(count / displayLimit);
@@ -17,6 +18,7 @@ const ReactComponentWithItems = () => {
     useEffect(() => {
         console.log('useEffect, will fetch');
         loadListOfNomenclatures();
+        loadListOfUsers();
         loadDataWithCond();
     }, []);
 
@@ -31,6 +33,22 @@ const ReactComponentWithItems = () => {
             }
         }).then(list => {
             setListOfNum(list)
+        }).catch(reason => {
+            console.error('error', reason);
+        });
+    }
+
+    function loadListOfUsers() {
+        console.log('load list of users');
+        return fetch(`/api/requests/list-of-users`, {
+            "method": "GET"
+        }).then(response => {
+            console.log('receiver response, status', response.status);
+            if (response.ok) {
+                return response.json()
+            }
+        }).then(list => {
+            setListOfUsers(list)
         }).catch(reason => {
             console.error('error', reason);
         });
@@ -58,7 +76,9 @@ const ReactComponentWithItems = () => {
     return (
         <div className="template">
             <div className="template__main">
-                <div>
+                <div style={{
+                    textAlign: "right"
+                }}>
                     <label>
                         Показ.:
                         <select className="Select Select_style_simple Select_size_n Select_darkened" value={displayLimit} onChange={(e) => {
@@ -70,7 +90,9 @@ const ReactComponentWithItems = () => {
                         </select>
                     </label>
                 </div>
-                <div className="pagination">
+                <div className="pagination" style={{
+                    textAlign: "right"
+                }}>
                     <label>
                         Стр.:
                         {pageOptions.map(pageNum => (
@@ -102,10 +124,10 @@ const ReactComponentWithItems = () => {
                     <tbody className="table__body">
                     {list.map((row, index) => {
                          return (
-                            <ListComponent row={row} index={index} loadDataWithCond={loadDataWithCond} listOfNom={listOfNom} page={page} displayLimit={displayLimit} key={row.id}/>
+                            <ListComponent row={row} index={index} loadDataWithCond={loadDataWithCond} listOfNom={listOfNom} listOfUsers={listOfUsers} page={page} displayLimit={displayLimit} key={row.id}/>
                         );
                     })}
-                    <ListComponent row={null} index={-1} loadDataWithCond={loadDataWithCond} listOfNom={listOfNom} key={null}/>
+                    <ListComponent row={null} index={-1} loadDataWithCond={loadDataWithCond} listOfNom={listOfNom} listOfUsers={listOfUsers} key={null}/>
                     </tbody>
                 </table>
             </div>
@@ -115,19 +137,21 @@ const ReactComponentWithItems = () => {
 
 const ListComponent = (props) => {
     const [nameIdToEdit, setNameIdToEdit] = useState('');
+    const [userNameIdToEdit, setUserNameIdToEdit] = useState('');
     const [batchNameToEdit, setBatchNameToEdit] = useState('');
     const [quantityToEdit, setQuantityToEdit] = useState('');
     const [nameIdToSave, setNameIdToSave] = useState('');
+    const [userNameIdToSave, setUserNameIdToSave] = useState('');
     const [quantityToSave, setQuantityToSave] = useState('');
     const [batchNameToSave, setBatchNameToSave] = useState('');
     const [edit, setEdit] = useState(false);
     // console.log(props, 'myprops');
 
     function editRow() {
-        console.log('edit');
+        console.log('edit', nameIdToEdit);
         return fetch("/api/equipment/edit", {
             "headers": {"content-type": "application/json"},
-            "body": JSON.stringify({"id": props.row.id, "nomenclatureId": nameIdToEdit, "count": quantityToEdit, "batchName": batchNameToEdit}),
+            "body": JSON.stringify({"id": props.row.id, "nomenclatureId": nameIdToEdit, "count": quantityToEdit, "createUserId": userNameIdToEdit, "batchName": batchNameToEdit}),
             "method": "PUT"
         });
     }
@@ -136,7 +160,7 @@ const ListComponent = (props) => {
         console.log('submit');
         return fetch("/api/equipment/add-item", {
             "headers": {"content-type": "application/json"},
-            "body": JSON.stringify({"nomenclatureId": nameIdToSave, "count": quantityToSave, "batchName": batchNameToSave}),
+            "body": JSON.stringify({"nomenclatureId": nameIdToSave, "count": quantityToSave, "createUserId": userNameIdToSave, "batchName": batchNameToSave}),
             "method": "PUT"
         });
     }
@@ -163,7 +187,6 @@ const ListComponent = (props) => {
                             <select className="Select Select_style_simple Select_size_n Select_darkened" value={nameIdToEdit} onChange={(event) => {
                                 setNameIdToEdit(event.target.value);
                             }}>
-                                <option value=""></option>
                                 {(props.listOfNom).map((nomenclature) => (
                                     <option key={nomenclature.id} value={nomenclature.id}>{nomenclature.name}</option>
                                 ))}
@@ -200,10 +223,27 @@ const ListComponent = (props) => {
                     <td className="table__cell wp-150 ta-c rowspan='1'" style={{
                         textAlign: "center"
                     }}>{edit && (
-                            <>{props.row.userName}</>
+                            <>
+                                <select className="Select Select_style_simple Select_size_n Select_darkened" value={userNameIdToEdit} onChange={(event) => {
+                                    setUserNameIdToEdit(event.target.value);
+                                }}>
+                                    {(props.listOfUsers).map((user) => (
+                                        <option key={user.id} value={user.id}>{user.name}</option>
+                                    ))}
+                                </select>
+                            </>
                         )}
                         {!edit && (
-                            <>{}</>
+                            <>
+                                <select className="Select Select_style_simple Select_size_n Select_darkened" value={userNameIdToSave} onChange={(e) => {
+                                    setUserNameIdToSave(e.target.value);
+                                }}>
+                                    <option value=""></option>
+                                    {(props.listOfUsers).map((user) => (
+                                        <option key={user.id} value={user.id}>{user.name}</option>
+                                    ))}
+                                </select>
+                            </>
                         )}
                     </td>
                     <td className="table__cell wp-150 ta-c rowspan='1'" style={{
@@ -277,6 +317,10 @@ const ListComponent = (props) => {
                                         alert('Вы не ввели количество');
                                         return;
                                     }
+                                    if (userNameIdToSave === '') {
+                                        alert('Вы не выбрали создателя');
+                                        return;
+                                    }
                                     if (batchNameToSave === '') {
                                         alert('Вы не ввели название партии');
                                         return;
@@ -305,7 +349,8 @@ const ListComponent = (props) => {
                     </td>
                     <td className="table__cell wp-150 ta-c rowspan='1'" style={{
                         textAlign: "center"
-                    }}>{props.row.userName}
+                    }}>
+                        {props.row.userName}
                     </td>
                     <td className="table__cell wp-150 ta-c rowspan='1'" style={{
                         textAlign: "center"
@@ -328,7 +373,8 @@ const ListComponent = (props) => {
                             setEdit(true);
                             setNameIdToEdit(props.row.nomenclatureId);
                             setQuantityToEdit(props.row.count);
-                            setBatchNameToEdit(props.row.batchName)
+                            setBatchNameToEdit(props.row.batchName);
+                            setUserNameIdToEdit(props.row.createUserId);
                         }}>
                             <span className="Btn__text">Редактировать</span>
                                 {/*✏️*/}

@@ -12,9 +12,9 @@ const Menu = () => {
                     <div className="Carousel__wrapper HeaderNavTop__nav_level_1_wrapper">
                         <div className="Carousel__slider HeaderNavTop__nav_level_1_slider">
                             <ul className="HeaderNavTop__nav__items_list">
-                                <li className="HeaderNavTop__nav__item  HeaderNavTop__nav__item_current">
+                                <li className={location.pathname.startsWith('/store') ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__item"}>
                                     <Link to="/store" className="HeaderNavTop__nav__link">Склад</Link></li>
-                                <li className="HeaderNavTop__nav__item">
+                                <li className={location.pathname.startsWith('/user') ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__item"}>
                                     <Link to="/user" className="HeaderNavTop__nav__link">Пользователь</Link></li>
                             </ul>
                         </div>
@@ -23,14 +23,38 @@ const Menu = () => {
                 <div className="Carousel HeaderNavTop__nav_level_2 ">
                     <div className="Carousel__wrapper HeaderNavTop__nav_level_2_wrapper">
                         <div className="Carousel__slider HeaderNavTop__nav_level_2_slider">
-                            <ul className="HeaderNavTop__nav__items_list">
-                                <li className={location.pathname === "/store/nomenclature" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>
-                                    <Link to="/store/nomenclature" className="HeaderNavTop__nav__link">Номенклатура</Link></li>
-                                <li className={location.pathname === "/store/items" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>
-                                    <Link to="/store/items" className="HeaderNavTop__nav__link">ТМЦ</Link></li>
-                                <li className={location.pathname === "/store/requests" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>
-                                    <Link to="/store/requests" className="HeaderNavTop__nav__link">Заявки</Link></li>
-                            </ul>
+                            {(location.pathname.startsWith('/store')) && (
+                                <>
+                                    <ul className="HeaderNavTop__nav__items_list">
+                                        <li className={location.pathname === "/store/nomenclature" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>
+                                            <Link to="/store/nomenclature" className="HeaderNavTop__nav__link">Номенклатура</Link></li>
+                                        <li className={location.pathname === "/store/items" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>
+                                            <Link to="/store/items" className="HeaderNavTop__nav__link">ТМЦ</Link></li>
+                                        <li className={location.pathname === "/store/requests" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>
+                                            <Link to="/store/requests" className="HeaderNavTop__nav__link">Заявки</Link></li>
+                                    </ul>
+                                </>
+                            )}
+                            {(location.pathname.startsWith('/user')) && (
+                                <>
+                                    <ul className="HeaderNavTop__nav__items_list">
+                                        <li className={location.pathname === "/user/list" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>
+                                            <Link to="/user/list" className="HeaderNavTop__nav__link">Список пользователей</Link></li>
+                                    </ul>
+                                </>
+                            )}
+                            {/*<ul className="HeaderNavTop__nav__items_list">*/}
+                            {/*    <li className={location.pathname === "/store/nomenclature" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>*/}
+                            {/*        <Link to="/store/nomenclature" className="HeaderNavTop__nav__link">Номенклатура</Link></li>*/}
+                            {/*    <li className={location.pathname === "/store/items" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>*/}
+                            {/*        <Link to="/store/items" className="HeaderNavTop__nav__link">ТМЦ</Link></li>*/}
+                            {/*    <li className={location.pathname === "/store/requests" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>*/}
+                            {/*        <Link to="/store/requests" className="HeaderNavTop__nav__link">Заявки</Link></li>*/}
+                            {/*</ul>*/}
+                            {/*<ul className="HeaderNavTop__nav__items_list">*/}
+                            {/*    <li className={location.pathname === "/user/list" ? "HeaderNavTop__nav__item  HeaderNavTop__nav__item_current" : "HeaderNavTop__nav__link"}>*/}
+                            {/*        <Link to="/store/requests" className="HeaderNavTop__nav__link">Список пользователей</Link></li>*/}
+                            {/*</ul>*/}
                         </div>
                     </div>
                 </div>

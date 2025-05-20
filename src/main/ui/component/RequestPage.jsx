@@ -18,9 +18,10 @@ const RequestPage = () => {
     const [listOfStatuses, setListOfStatuses] = useState([]);
     const [request, setRequest] = useState(null);
     const [count, setCount] = useState(0);
-    const [nameIdToEdit, setNameToEdit] = useState('');
+    const [nameIdToEdit, setNameIdToEdit] = useState('');
     const [quantityToEdit, setQuantityToEdit] = useState('');
     const [statusIdToEdit, setStatusIdToEdit] = useState('');
+    const [userNameIdToEdit, setUserNameIdToEdit] = useState('');
     const [nameIdToSave, setNameIdToSave] = useState('');
     const [quantityToSave, setQuantityToSave] = useState('');
     const [userNameIdToSave, setUserNameIdToSave] = useState('');
@@ -118,10 +119,10 @@ const RequestPage = () => {
     }
 
     function editRow() {
-        console.log('edit');
+        console.log('edit', quantityToEdit, nameIdToEdit);
         return fetch("/api/requests/edit", {
             "headers": {"content-type": "application/json"},
-            "body": JSON.stringify({"id": request?.id, "quantity": quantityToEdit, "nomenclatureId": nameIdToEdit, "statusId": statusIdToEdit}),
+            "body": JSON.stringify({"id": request?.id, "quantity": quantityToEdit, "nomenclatureId": nameIdToEdit, "createUserId": userNameIdToEdit}),
             "method": "PUT"
         });
     }
@@ -173,7 +174,6 @@ const RequestPage = () => {
                                     <select className="Select Select_style_simple Select_size_n Select_darkened" value={nameIdToEdit} onChange={(event) => {
                                         setNameIdToEdit(event.target.value);
                                     }}>
-                                        <option value=""></option>
                                         {(listOfNom).map((nomenclature) => (
                                             <option key={nomenclature.id} value={nomenclature.id}>{nomenclature.name}</option>
                                         ))}
@@ -215,14 +215,15 @@ const RequestPage = () => {
                             <div className="GridLayout__cell">Создатель</div>
                             <div className="GridLayout__cell">
                                 {edit && (
-                                    <select className="Select Select_style_simple Select_size_n Select_darkened" value={userNameIdToSave} onChange={(event) => {
-                                        setUserNameIdToSave(event.target.value);
-                                    }}>
-                                        <option value=""></option>
-                                        {(listOfUsers).map((user) => (
-                                            <option key={user.id} value={user.id}>{user.name}</option>
-                                        ))}
-                                    </select>
+                                    <>
+                                        <select className="Select Select_style_simple Select_size_n Select_darkened" value={userNameIdToEdit} onChange={(event) => {
+                                            setUserNameIdToEdit(event.target.value);
+                                        }}>
+                                            {(listOfUsers).map((user) => (
+                                                <option key={user.id} value={user.id}>{user.name}</option>
+                                            ))}
+                                        </select>
+                                    </>
                                 )}
                                 {save && (
                                     <>
@@ -242,19 +243,19 @@ const RequestPage = () => {
                             </div>
                             <div className="GridLayout__cell">Статус</div>
                             <div className="GridLayout__cell">
-                                {edit && (
-                                                <select className="Select Select_style_simple Select_size_n Select_darkened" value={statusIdToEdit} onChange={(event) => {
-                                                setStatusIdToEdit(event.target.value);
-                                            }}>
-                                                <option value=""></option>
-                                                {(listOfStatuses).map((status) => (
-                                                    <option key={status.id} value={status.id}>{status.name}</option>
-                                                ))}
-                                            </select>
-                                )}
-                                {!edit && (
+                                {/*{edit && (*/}
+                                {/*                <select className="Select Select_style_simple Select_size_n Select_darkened" value={statusIdToEdit} onChange={(event) => {*/}
+                                {/*                setStatusIdToEdit(event.target.value);*/}
+                                {/*            }}>*/}
+                                {/*                <option value=""></option>*/}
+                                {/*                {(listOfStatuses).map((status) => (*/}
+                                {/*                    <option key={status.id} value={status.id}>{status.name}</option>*/}
+                                {/*                ))}*/}
+                                {/*            </select>*/}
+                                {/*)}*/}
+                                {/*{!edit && (*/}
                                     <>{request?.statusName}</>
-                                )}
+                                {/*)}*/}
                             </div>
                         </div>
                         <div className="GridLayout__row">
@@ -297,21 +298,30 @@ const RequestPage = () => {
                     <div style={{
                         textAlign: "center"
                     }}>
-                        {!save && (
-
-                            <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={event => {
-                                editRow().then(value => {
-                                    setEdit(false);
-                                })
-                            }}>
-                                <span className="Btn__text">Сохранить</span>
-                            </button>
-                        )}
-                        {!edit && (
+                        {save ? (
+                            <>
+                                <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={handleSaveClick}>
+                                    <span className="Btn__text">Зарегестрировать заявку</span>
+                                </button>
+                            </>
+                        ) : edit ? (
+                            <>
+                                <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={event => {
+                                    editRow().then(value => {
+                                        loadRequest();
+                                        setEdit(false);
+                                    })
+                                }}>
+                                    <span className="Btn__text">Сохранить</span>
+                                </button>
+                            </>
+                        ) : ((request?.statusId) === 2) ? (
+                            <></>
+                        ) : (
                             <>
                                 <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={() => {
                                     setEdit(true);
-                                    setNameToEdit(request?.nomenclatureId);
+                                    setNameIdToEdit(request?.nomenclatureId);
                                     setQuantityToEdit(request?.quantity);
                                     setStatusIdToEdit(request?.statusId);
                                     setUserNameIdToSave(request?.createUserId)
@@ -320,11 +330,33 @@ const RequestPage = () => {
                                 </button>
                             </>
                         )}
-                        {save && (
-                            <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={handleSaveClick}>
-                                <span className="Btn__text">Зарегестрировать заявку</span>
-                            </button>
-                        )}
+                        {/*{save && (*/}
+                        {/*    <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={event => {*/}
+                        {/*        editRow().then(value => {*/}
+                        {/*            setEdit(false);*/}
+                        {/*        })*/}
+                        {/*    }}>*/}
+                        {/*        <span className="Btn__text">Сохранить</span>*/}
+                        {/*    </button>*/}
+                        {/*)}*/}
+                        {/*{!edit && (*/}
+                        {/*    <>*/}
+                        {/*        <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={() => {*/}
+                        {/*            setEdit(true);*/}
+                        {/*            setNameToEdit(request?.nomenclatureId);*/}
+                        {/*            setQuantityToEdit(request?.quantity);*/}
+                        {/*            setStatusIdToEdit(request?.statusId);*/}
+                        {/*            setUserNameIdToSave(request?.createUserId)*/}
+                        {/*        }}>*/}
+                        {/*            <span className="Btn__text">Редактировать</span>*/}
+                        {/*        </button>*/}
+                        {/*    </>*/}
+                        {/*)}*/}
+                        {/*{save && (*/}
+                        {/*    <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={handleSaveClick}>*/}
+                        {/*        <span className="Btn__text">Зарегестрировать заявку</span>*/}
+                        {/*    </button>*/}
+                        {/*)}*/}
                     </div>
                 </div>
             </div>

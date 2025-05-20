@@ -44,28 +44,12 @@ const ReactComponentWithNomenclature = () => {
         });
     }
 
-    function submit() {
-        console.log('submit');
-        return fetch("/api/equipment/add-nomenclature", {
-            "headers": {"content-type": "application/json"},
-            "body": JSON.stringify({"name": name}),
-            "method": "PUT"
-        });
-    }
-
-    function edit() {
-        console.log('edit');
-        return fetch("/api/equipment/edit-nomenclature", {
-            "headers": {"content-type": "application/json"},
-            "body": JSON.stringify({"id": id, "name": nameToEdit}),
-            "method": "PUT"
-        });
-    }
-
     return (
         <div className="template">
             <div className="template__main">
-                <div>
+                <div style={{
+                    textAlign: "right"
+                }}>
                     <label>
                         Показ.:
                         <select className="Select Select_style_simple Select_size_n Select_darkened" value={displayLimit} onChange={(e) => {
@@ -77,7 +61,9 @@ const ReactComponentWithNomenclature = () => {
                         </select>
                     </label>
                 </div>
-                <div className="pagination">
+                <div className="pagination" style={{
+                    textAlign: "right"
+                }}>
                     <label>
                         Стр.:
                         {pageOptions.map(pageNum => (
@@ -188,7 +174,7 @@ const ListItemComponent = (props) => {
                             )}
                             {!edit && (
                                 <>{props.row.name}
-                                <span className="Btn__icon Btn_size_n" onClick={() => {setEdit(true); setNameToEdit(props.row.name)}}>
+                                <span className="Btn__icon Btn_size_n" onClick={() => {setEdit(true); setNameToEdit(props.row.name);}}>
                                         ✏️
                                 </span>
                                 </>

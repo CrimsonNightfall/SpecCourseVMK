@@ -159,7 +159,7 @@ const ReactComponentWithRequests = () => {
                         <th className="table__cell wp-120" rowSpan={1}>Время регистрации</th>
                         <th className="table__cell wp-120" rowSpan={1}>Время обновления</th>
                         <th className="table__cell wp-120" rowSpan={1}>Время завершения</th>
-                        <th className="table__cell wp-120" rowSpan={1}>Управление</th>
+                        {/*<th className="table__cell wp-120" rowSpan={1}>Управление</th>*/}
                     </tr>
                     </thead>
                     <tbody className="table__body">
@@ -216,163 +216,6 @@ const ListComponent = (props) => {
 
     return (
         <tr className="table__row" key={props.index}>
-            {/*{edit === true || props.index === -1 ? (*/}
-            {/*    <>*/}
-            {/*        <td className="table__cell wp-20 ta-c rowspan='1'" style={{*/}
-            {/*            textAlign: "left"*/}
-            {/*        }}>*/}
-            {/*            <Link to={`/store/requests/${props.row.id}`} style={{*/}
-            {/*                display: "block"*/}
-            {/*            }}><div>{props.row.id}</div></Link>*/}
-            {/*        /!*    {edit && (*!/*/}
-            {/*        /!*    <div>*!/*/}
-            {/*        /!*        <Link to="/store/requests/add">{props.row.id}</Link>*!/*/}
-            {/*        /!*    </div>*!/*/}
-            {/*        /!*)}*!/*/}
-            {/*        /!*    {!edit && (*!/*/}
-            {/*        /!*        <>{}</>*!/*/}
-            {/*        /!*    )}*!/*/}
-            {/*        </td>*/}
-            {/*        <td className="table__cell wp-150 rowspan='1'">*/}
-            {/*            {edit && (*/}
-            {/*                <select className="Select Select_style_simple Select_size_n Select_darkened" value={nameIdToEdit} onChange={(event) => {*/}
-            {/*                    setNameIdToEdit(event.target.value);*/}
-            {/*                }}>*/}
-            {/*                    <option value=""></option>*/}
-            {/*                    {(props.listOfNom).map((nomenclature) => (*/}
-            {/*                        <option key={nomenclature.id} value={nomenclature.id}>{nomenclature.name}</option>*/}
-            {/*                    ))}*/}
-            {/*                </select>*/}
-            {/*            )}*/}
-            {/*            {!edit && (*/}
-            {/*                <>*/}
-            {/*                    /!*<input className="Input Input_style_simple Input_size_n" value={nameToSave} onChange={event => setNameToSave(event.target.value)}/>*!/*/}
-            {/*                    <select className="Select Select_style_simple Select_size_n Select_darkened" value={nameIdToSave} onChange={(e) => {*/}
-            {/*                        setNameIdToSave(e.target.value);*/}
-            {/*                    }}>*/}
-            {/*                        <option value=""></option>*/}
-            {/*                        {(props.listOfNom).map((nomenclature) => (*/}
-            {/*                            <option key={nomenclature.id} value={nomenclature.id}>{nomenclature.name}</option>*/}
-            {/*                        ))}*/}
-            {/*                    </select>*/}
-            {/*                </>*/}
-            {/*            )}*/}
-            {/*        </td>*/}
-            {/*        <td className="table__cell wp-100 ta-c rowspan='1'" style={{*/}
-            {/*            textAlign: "center"*/}
-            {/*        }}>*/}
-            {/*            {edit && (*/}
-            {/*                <>*/}
-            {/*                    <input className="Input Input_style_simple Input_size_n" value={quantityToEdit} onChange={event => setQuantityToEdit(event.target.value)}/>*/}
-            {/*                </>*/}
-            {/*            )}*/}
-            {/*            {!edit && (*/}
-            {/*                <>*/}
-            {/*                    <input className={(quantityToSave === '' ? "Input_state_warning " : "") + "Input Input_style_simple Input_size_n"} value={quantityToSave} onChange={event => setQuantityToSave(event.target.value)}/>*/}
-            {/*                </>*/}
-            {/*            )}*/}
-            {/*        </td>*/}
-            {/*        <td className="table__cell wp-150 rowspan='1'">*/}
-            {/*            {edit && (*/}
-            {/*                <select className="Select Select_style_simple Select_size_n Select_darkened" value={userNameIdToSave} onChange={(event) => {*/}
-            {/*                    setUserNameIdToSave(event.target.value);*/}
-            {/*                }}>*/}
-            {/*                    <option value=""></option>*/}
-            {/*                    {(props.listOfUsers).map((user) => (*/}
-            {/*                        <option key={user.id} value={user.id}>{user.name}</option>*/}
-            {/*                    ))}*/}
-            {/*                </select>*/}
-            {/*            )}*/}
-            {/*            {!edit && (*/}
-            {/*                <>*/}
-            {/*                    <select className="Select Select_style_simple Select_size_n Select_darkened" value={userNameIdToSave} onChange={(e) => {*/}
-            {/*                        setUserNameIdToSave(e.target.value);*/}
-            {/*                    }}>*/}
-            {/*                        <option value=""></option>*/}
-            {/*                        {(props.listOfUsers).map((user) => (*/}
-            {/*                            <option key={user.id} value={user.id}>{user.name}</option>*/}
-            {/*                        ))}*/}
-            {/*                    </select>*/}
-            {/*                </>*/}
-            {/*            )}*/}
-            {/*        </td>*/}
-            {/*        <td className="table__cell wp-150 ta-c rowspan='1'" style={{*/}
-            {/*            textAlign: "center"*/}
-            {/*        }}>{edit && (*/}
-            {/*            <select className="Select Select_style_simple Select_size_n Select_darkened" value={statusIdToEdit} onChange={(event) => {*/}
-            {/*                setStatusIdToEdit(event.target.value);*/}
-            {/*            }}>*/}
-            {/*                <option value=""></option>*/}
-            {/*                {(props.listOfStatuses).map((status) => (*/}
-            {/*                    <option key={status.id} value={status.id}>{status.name}</option>*/}
-            {/*                ))}*/}
-            {/*            </select>*/}
-            {/*        )}*/}
-            {/*            {!edit && (*/}
-            {/*                <>*/}
-            {/*                </>*/}
-            {/*            )}*/}
-            {/*        </td>*/}
-            {/*        <td className="table__cell wp-120 ta-c rowspan='1'" style={{*/}
-            {/*            textAlign: "center"*/}
-            {/*        }}>{edit && (*/}
-            {/*            <>{dayjs(props.row.registrationTime).format('YYYY.MM.DD HH:mm')}</>*/}
-            {/*        )}*/}
-            {/*            {!edit && (*/}
-            {/*                <>{}</>*/}
-            {/*            )}*/}
-            {/*        </td>*/}
-            {/*        <td className="table__cell wp-120 ta-c rowspan='1'" style={{*/}
-            {/*            textAlign: "center"*/}
-            {/*        }}>{edit && (*/}
-            {/*            <>{dayjs(props.row.updateTime).format('YYYY.MM.DD HH:mm')}</>*/}
-            {/*        )}*/}
-            {/*            {!edit && (*/}
-            {/*                <>{}</>*/}
-            {/*            )}*/}
-            {/*        </td>*/}
-            {/*        <td className="table__cell wp-120 ta-c rowspan='1'" style={{*/}
-            {/*            textAlign: "center"*/}
-            {/*        }}>{edit && (*/}
-            {/*            <>{dayjs(props.row.completionTime).format('YYYY.MM.DD HH:mm')}</>*/}
-            {/*        )}*/}
-            {/*            {!edit && (*/}
-            {/*                <>{}</>*/}
-            {/*            )}*/}
-            {/*        </td>*/}
-            {/*        <td className="table__cell wp-120 ta-c rowspan='1'" style={{*/}
-            {/*            textAlign: "center"*/}
-            {/*        }}>*/}
-            {/*            {edit && (*/}
-            {/*                <div>*/}
-            {/*                    <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={event => {*/}
-            {/*                        editRow().then(value => {*/}
-            {/*                            props.loadDataWithCond(props.page, props.displayLimit);*/}
-            {/*                            setEdit(false);*/}
-            {/*                        })*/}
-            {/*                    }}><span className="Btn__text">Сохранить</span></button>*/}
-            {/*                </div>*/}
-            {/*            )}*/}
-            {/*            {!edit && (*/}
-            {/*                <>*/}
-            {/*                    <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={event => {*/}
-            {/*                        if (nameIdToSave === '') {*/}
-            {/*                            alert('Вы не выбрали номеклатуру');*/}
-            {/*                            return;*/}
-            {/*                        }*/}
-            {/*                        if (quantityToSave === '') {*/}
-            {/*                            alert('Вы не ввели количество');*/}
-            {/*                            return;*/}
-            {/*                        }*/}
-            {/*                        submitRow().then(value => {*/}
-            {/*                            props.loadDataWithCond(props.page, props.displayLimit);*/}
-            {/*                        })*/}
-            {/*                    }}><span className="Btn__text">Отправить</span></button>*/}
-            {/*                </>*/}
-            {/*            )}*/}
-            {/*        </td>*/}
-            {/*    </>*/}
-            {/*) : (*/}
                 <>
                     <td className="table__cell wp-20 ta-c rowspan='1'" style={{
                         textAlign: "left"
@@ -406,26 +249,24 @@ const ListComponent = (props) => {
                             dayjs(props.row.completionTime).format('YYYY.MM.DD HH:mm')
                         )}
                         {(!props.row.completionTime) && (
-                            <>{}</>
+                            <>&mdash;</>
                         )}
                     </td>
-                    <td className="table__cell wp-120 ta-c rowspan='1'" style={{
-                        textAlign: "center"
-                    }}>{
-                        <>
-                            <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={() => {
-                                setEdit(true);
-                                setNameIdToEdit(props.row.nomenclatureId);
-                                setQuantityToEdit(props.row.count);
-                                setStatusIdToEdit(props.row.statusId)
-                            }}>
-                                <span className="Btn__text">Редактировать</span>
-                                {/*✏️*/}
-                            </button>
-                        </>
-                    }</td>
+                    {/*<td className="table__cell wp-120 ta-c rowspan='1'" style={{*/}
+                    {/*    textAlign: "center"*/}
+                    {/*}}>{*/}
+                    {/*    <>*/}
+                    {/*        <button className="Btn Btn_style_simple Btn_size_n Btn_color_blue3 no-wr Btn_darkened" onClick={() => {*/}
+                    {/*            setEdit(true);*/}
+                    {/*            setNameIdToEdit(props.row.nomenclatureId);*/}
+                    {/*            setQuantityToEdit(props.row.count);*/}
+                    {/*            setStatusIdToEdit(props.row.statusId)*/}
+                    {/*        }}>*/}
+                    {/*            <span className="Btn__text">Редактировать</span>*/}
+                    {/*        </button>*/}
+                    {/*    </>*/}
+                    {/*}</td>*/}
                 </>
-            {/*)}*/}
         </tr>
     )
 }

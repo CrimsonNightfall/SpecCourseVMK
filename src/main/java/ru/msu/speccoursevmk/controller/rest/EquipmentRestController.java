@@ -55,6 +55,30 @@ public class EquipmentRestController {
         return ResponseEntity.ok(nomenclatures);
     }
 
+    @GetMapping("/list-of-users")
+    public ResponseEntity<List<User>> getListOfUsers() {
+        String sSQL = "SELECT * FROM obj_users ORDER BY id ASC";
+        List<Map<String, Object>> maps = template.queryForList(sSQL);
+        var users = new ArrayList<User>();
+        maps.forEach(entity -> {
+            var curEntity = new User();
+            var curIdValue = (int) entity.get("id");
+            curEntity.setId(curIdValue);
+            var curLogin = entity.get("login");
+            curEntity.setName(String.valueOf(curLogin));
+            var curName = entity.get("full_name");
+            curEntity.setName(String.valueOf(curName));
+            var curRoleValue = (int) entity.get("role_id");
+            curEntity.setRoleId(curRoleValue);
+            var curCreateTime = (Timestamp) entity.get("create_time");
+            curEntity.setCreateTime(curCreateTime.toInstant());
+            var curUpdateTime = (Timestamp) entity.get("update_time");
+            curEntity.setUpdateTime(curUpdateTime.toInstant());
+            users.add(curEntity);
+        });
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/list")
     public ResponseEntity<ItemsListResponse> getList(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "displayLimit", required = false, defaultValue = "10") int displayLimit) {
 //        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
@@ -64,7 +88,7 @@ public class EquipmentRestController {
                 "ON obj_items.nomenclature_name_id = rubr_item_nomenclatures.id\n" +
                 "LEFT JOIN obj_users\n" +
                 "ON obj_items.create_user_id = obj_users.id\n" +
-                " ORDER BY id ASC OFFSET ? LIMIT ?";
+                " ORDER BY id DESC OFFSET ? LIMIT ?";
         String sSQLcount = "SELECT count(*) as count from obj_items";
         Integer count = template.queryForObject(sSQLcount, Integer.class);
         List<Map<String, Object>> maps = template.queryForList(sSQL, (page - 1) * displayLimit, displayLimit);
@@ -99,7 +123,7 @@ public class EquipmentRestController {
 
     @GetMapping("/nomenclatures")
     public ResponseEntity<NomenclatureListResponse> getNomenclatures(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "displayLimit", required = false, defaultValue = "10") int displayLimit) {
-        String sSQL = "SELECT * FROM rubr_item_nomenclatures ORDER BY id ASC OFFSET ? LIMIT ?";
+        String sSQL = "SELECT * FROM rubr_item_nomenclatures ORDER BY id DESC OFFSET ? LIMIT ?";
         String sSQLcount = "SELECT count(*) as count from rubr_item_nomenclatures";
         Integer count = template.queryForObject(sSQLcount, Integer.class);
         List<Map<String, Object>> maps = template.queryForList(sSQL, (page - 1) * displayLimit, displayLimit);
@@ -135,7 +159,8 @@ public class EquipmentRestController {
         //template.update(sSQLGetId, items.getNomenclatureName());
 //        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, items.getNomenclatureName());
         String sSQL = "INSERT INTO obj_items (nomenclature_name_id, quantity, create_user_id, batch_name) VALUES (?, ?, ?, ?)";
-        template.update(sSQL, items.getNomenclatureId(), items.getCount(), 1, items.getBatchName());
+        template.update(sSQL, items.getNomenclatureId(), items.getCount(), items.getCreateUserId(), items.getBatchName());
+        requestProcessingAPI.afterRequestUpdate();
         return ResponseEntity.ok().build();
     }
 
@@ -144,27 +169,28 @@ public class EquipmentRestController {
         Date now = Date.from(Instant.now());
 //        String sSQLGetId = "SELECT id FROM rubr_item_nomenclatures WHERE name = ?";
 //        Integer nomId = template.queryForObject(sSQLGetId, Integer.class, items.getNomenclatureName());
-        String sSQL = "UPDATE obj_items SET nomenclature_name_id = ?, quantity = ?, batch_name = ?, update_time = ? WHERE id = ?";
-        template.update(sSQL, items.getNomenclatureId(), items.getCount(), items.getBatchName(), now, items.getId());
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/edit-count")
-    public ResponseEntity<Void> editCount(@RequestBody ItemsWithNames items) {
-        Date now = Date.from(Instant.now());
-        String sSQL = "UPDATE obj_items SET quantity = ?, update_time = ? WHERE id = ?";
-        template.update(sSQL, items.getCount(), now, items.getId());
+        String sSQL = "UPDATE obj_items SET nomenclature_name_id = ?, quantity = ?, create_user_id = ?, batch_name = ?, update_time = ? WHERE id = ?";
+        template.update(sSQL, items.getNomenclatureId(), items.getCount(), items.getCreateUserId(), items.getBatchName(), now, items.getId());
         requestProcessingAPI.afterRequestUpdate();
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/edit-batch-name")
-    public ResponseEntity<Void> editBatchName(@RequestBody ItemsWithNames items) {
-        Date now = Date.from(Instant.now());
-        String sSQL = "UPDATE obj_items SET batch_name = ?, update_time = ? WHERE id = ?";
-        template.update(sSQL, items.getBatchName(), now, items.getId());
-        return ResponseEntity.ok().build();
-    }
+//    @PutMapping("/edit-count")
+//    public ResponseEntity<Void> editCount(@RequestBody ItemsWithNames items) {
+//        Date now = Date.from(Instant.now());
+//        String sSQL = "UPDATE obj_items SET quantity = ?, update_time = ? WHERE id = ?";
+//        template.update(sSQL, items.getCount(), now, items.getId());
+//        requestProcessingAPI.afterRequestUpdate();
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    @PutMapping("/edit-batch-name")
+//    public ResponseEntity<Void> editBatchName(@RequestBody ItemsWithNames items) {
+//        Date now = Date.from(Instant.now());
+//        String sSQL = "UPDATE obj_items SET batch_name = ?, update_time = ? WHERE id = ?";
+//        template.update(sSQL, items.getBatchName(), now, items.getId());
+//        return ResponseEntity.ok().build();
+//    }
 
     @PutMapping("/edit-nomenclature")
     public ResponseEntity<Void> editNomenclature(@RequestBody Nomenclature nomenclature) {

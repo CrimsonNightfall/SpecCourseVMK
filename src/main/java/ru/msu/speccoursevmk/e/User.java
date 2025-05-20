@@ -11,7 +11,8 @@ public class User {
     private int id;
     private String login;
     private String name;
-    private int role;
+    private int roleId;
+    private String roleName;
     private Instant createTime;
     private Instant updateTime;
 }
